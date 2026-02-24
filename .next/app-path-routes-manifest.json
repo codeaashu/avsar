@@ -1,0 +1,16 @@
+{
+  "/(auth)/sign-in/[[...sign-in]]/page": "/sign-in/[[...sign-in]]",
+  "/(auth)/sign-up/[[...sign-up]]/page": "/sign-up/[[...sign-up]]",
+  "/(main)/create-event/page": "/create-event",
+  "/(main)/my-events/[eventId]/page": "/my-events/[eventId]",
+  "/(main)/my-events/page": "/my-events",
+  "/(main)/my-tickets/page": "/my-tickets",
+  "/(public)/events/[slug]/page": "/events/[slug]",
+  "/(public)/explore/[slug]/page": "/explore/[slug]",
+  "/(public)/explore/page": "/explore",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/generate-event/route": "/api/generate-event",
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/"
+}

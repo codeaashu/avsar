@@ -27,7 +27,36 @@ export const createEvent = mutation({
   },
   handler: async (ctx, args) => {
     try {
-      const user = await ctx.runQuery(internal.users.getCurrentUser);
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        throw new Error("You must be signed in to create an event.");
+      }
+
+      let user = await ctx.db
+        .query("users")
+        .withIndex("by_token", (q) =>
+          q.eq("tokenIdentifier", identity.tokenIdentifier)
+        )
+        .unique();
+
+      if (!user) {
+        const userId = await ctx.db.insert("users", {
+          email: identity.email ?? "",
+          tokenIdentifier: identity.tokenIdentifier,
+          name: identity.name ?? "Anonymous",
+          imageUrl: identity.pictureUrl,
+          hasCompletedOnboarding: false,
+          freeEventsCreated: 0,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+
+        user = await ctx.db.get(userId);
+        if (!user) {
+          throw new Error("Failed to initialize user profile.");
+        }
+      }
+
       const isPro = args.hasPro ?? false;
 
       // SERVER-SIDE CHECK: Verify event limit for Free users

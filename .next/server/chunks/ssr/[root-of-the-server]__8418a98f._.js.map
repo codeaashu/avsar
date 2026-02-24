@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../app/%28auth%29/sign-in/%5B%5B...sign-in%5D%5D/page.jsx"],"sourcesContent":["import { SignIn } from \"@clerk/nextjs\";\n\nexport default function Page() {\n  return <SignIn />;\n}\n"],"names":[],"mappings":"gXAAA,EAAA,EAAA,CAAA,CAAA,OAEe,SAAS,IACtB,MAAO,CAAA,EAAA,EAAA,GAAA,EAAC,EAAA,MAAM,CAAA,CAAA,EAChB"}

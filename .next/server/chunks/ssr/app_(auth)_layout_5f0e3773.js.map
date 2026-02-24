@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../app/%28auth%29/layout.js"],"sourcesContent":["const AuthLayout = ({ children }) => {\n  return <div className=\"flex justify-center pt-10\">{children}</div>;\n};\n\nexport default AuthLayout;\n"],"names":[],"mappings":"wEAAmB,CAAC,UAAE,CAAQ,CAAE,GACvB,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAI,UAAU,qCAA6B"}

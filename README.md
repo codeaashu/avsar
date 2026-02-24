@@ -53,6 +53,8 @@ NEXT_PUBLIC_UNSPLASH_ACCESS_KEY=
 
 # From Google AI Studio (Gemini API key)
 GEMINI_API_KEY=
+# Optional: Change model version (default: gemini-2.5-flash)
+GEMINI_MODEL=
 ```
 
 ## Where to find each value

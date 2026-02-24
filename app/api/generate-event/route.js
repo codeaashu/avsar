@@ -1,20 +1,28 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 export async function POST(req) {
   try {
     const { prompt } = await req.json();
 
-    if (!prompt) {
+    if (!prompt?.trim()) {
       return NextResponse.json(
         { error: "Prompt is required" },
         { status: 400 }
       );
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json(
+        { error: "GEMINI_API_KEY is not configured" },
+        { status: 500 }
+      );
+    }
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+    const model = genAI.getGenerativeModel({ model: modelName });
 
     const systemPrompt = `You are an event planning assistant. Generate event details based on the user's description.
 
@@ -29,7 +37,7 @@ Return this exact JSON structure:
   "suggestedTicketType": "free"
 }
 
-User's event idea: ${prompt}
+User's event idea: ${prompt.trim()}
 
 Rules:
 - Return ONLY the JSON object, no markdown, no explanation
@@ -57,14 +65,38 @@ Rules:
 
     console.log(cleanedText);
 
-    const eventData = JSON.parse(cleanedText);
+    let eventData;
+    try {
+      eventData = JSON.parse(cleanedText);
+    } catch {
+      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error("AI response was not valid JSON");
+      }
+      eventData = JSON.parse(jsonMatch[0]);
+    }
+
+    if (
+      !eventData?.title ||
+      !eventData?.description ||
+      !eventData?.category ||
+      eventData?.suggestedCapacity == null ||
+      !eventData?.suggestedTicketType
+    ) {
+      throw new Error("AI returned incomplete event details");
+    }
 
     return NextResponse.json(eventData);
   } catch (error) {
     console.error("Error generating event:", error);
+    const status = error.message?.includes("429") || error.message?.includes("Quota exceeded") ? 429 : 500;
+    const errorMessage = status === 429 
+      ? "AI Usage Limit Exceeded. Please try again in a few minutes." 
+      : `Failed to generate event: ${error.message}`;
+
     return NextResponse.json(
-      { error: "Failed to generate event" + error.message },
-      { status: 500 }
+      { error: errorMessage },
+      { status }
     );
   }
 }

@@ -34,12 +34,27 @@ export default function AIEventCreator({ onEventGenerated }) {
       });
 
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Failed to generate event");
+      }
+
+      if (
+        !data?.title ||
+        !data?.description ||
+        !data?.category ||
+        data?.suggestedCapacity == null ||
+        !data?.suggestedTicketType
+      ) {
+        throw new Error("AI returned incomplete event details. Please retry.");
+      }
+
       onEventGenerated(data);
       toast.success("Event details generated! Review and customize below.");
       setIsOpen(false);
       setPrompt("");
     } catch (error) {
-      toast.error("Failed to generate event. Please try again.");
+      toast.error(error.message || "Failed to generate event. Please try again.");
       console.error(error);
     } finally {
       setLoading(false);

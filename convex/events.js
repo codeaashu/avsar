@@ -57,7 +57,8 @@ export const createEvent = mutation({
         }
       }
 
-      const isPro = args.hasPro ?? false;
+      const { hasPro, ...eventData } = args;
+      const isPro = hasPro ?? false;
 
       // SERVER-SIDE CHECK: Verify event limit for Free users
       if (!isPro && user.freeEventsCreated >= 1) {
@@ -85,7 +86,7 @@ export const createEvent = mutation({
 
       // Create event
       const eventId = await ctx.db.insert("events", {
-        ...args,
+        ...eventData,
         themeColor, // Use validated color
         slug: `${slug}-${Date.now()}`,
         organizerId: user._id,

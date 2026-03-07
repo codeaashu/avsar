@@ -32,7 +32,7 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/avsar.png"
+              src="/logo.png"
               alt="avsar logo"
               width={500}
               height={500}
